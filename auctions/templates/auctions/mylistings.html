@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>My Listings</h2>
+{% for lst in lstings %}
+<div>
+	<img src="{{lst.imageurl}}">
+    <p><h4><a href="{% url 'listing' lst.id %}">{{lst.title}}</a></h4></p>
+    <p>{{lst.description}}</p>
+    <p><h4>Current Bid: {{lst.bid}}</h4></p>
+</div>
+{% empty %}
+You have not listed any item.
+{% endfor %}
+
+{% endblock %}

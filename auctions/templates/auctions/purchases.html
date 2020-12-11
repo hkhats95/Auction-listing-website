@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Purchases</h2>
+{% for lst in lstings %}
+<div>
+	<img src="{{lst.imageurl}}">
+	<h3><a href="{% url 'listing' lst.id %}">{{lst.title}}</a></h3>
+	<p>{{lst.description}}</p>
+</div>
+{% empty %}
+<h4>You have not purchased any item.</h4>
+{% endfor %}
+{% endblock %}

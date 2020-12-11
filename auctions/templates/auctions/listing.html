@@ -1,0 +1,86 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<div>
+	<h3>{{lst.title}}</h3>
+	<img src="{{lst.imageurl}}">
+	<p>{{lst.description}}</p>
+	{% if lst.active %}
+	<h4>Current Bid: {{lst.bid}}</h4>
+	{% if request.user.is_authenticated %}
+		{% if bid_error_message %}
+		{{bid_error_message}}
+		{% endif %}
+		{% if e %}
+		{{e}}
+		{% endif %}
+		<div><form action="{% url 'bid' lst.id %}" method="post">
+			{% csrf_token %}
+			{{bform}}
+			<input class="btn btn-success" type="submit" value="Place bid">
+		</form></div>
+		{% if request.user in lst.watchlist.all %}
+		<div>
+			<form action="{% url 'watchlist' lst.id %}" method="post">
+				{% csrf_token %}
+				<input type="submit" name="submit" value="Remove from Watchlist" class="btn btn-light">
+				
+			</form>
+		</div>
+		{% else %}
+		<div>
+			<form action="{% url 'watchlist' lst.id %}" method="post">
+				{% csrf_token %}
+				<input type="submit" name="submit" value="Add to Watchlist" class="btn btn-primary">
+				
+			</form>
+		</div>
+		{% endif %}
+		{% if request.user == lst.user %}
+		<div>
+			<form action="{% url 'close' lst.id %}" method="post">
+				{% csrf_token %}
+				<input type="submit" name="submit" value="Close Bidding" class="btn btn-secondary">
+				
+			</form>
+		</div>
+		{% endif %}
+
+	{% else %}
+		<a href="{% url 'login' %}">Login</a> to place bid!!
+	{% endif %}
+	{% else %}
+		{% if lst.buyer != request.user %}
+		<h4>This item is sold to {{lst.buyer.username}}.</h4>
+		{% elif lst.buyer == request.user %}
+		<h4>Congratulation you won this item.</h4>
+		{% else %}
+		<h4>This item is removed.</h4>
+		{% endif %}
+	{% endif %}
+</div>
+
+{% if lst.active %}
+<div>
+	<h4>Comments</h4>
+	{% if request.user.is_authenticated  %}
+	<div>
+		<form action="{% url 'comment' lst.id %}" method="post">
+			{% csrf_token %}
+			{{cform}}
+			<input type="submit" class="btn btn-success" value="Submit">
+		</form>
+	</div>
+	{% else %}
+		<a href="{% url 'login' %}">Login</a> to leave a comment.
+	{% endif %}
+	{% for cmnt in cmnts %}
+		<div>
+			<h6>{{cmnt.user.username}}</h6>
+			<p>{{cmnt.comment}}</p>
+		</div>
+	{% endfor %}
+</div>
+{% endif %}
+{% endblock %}
